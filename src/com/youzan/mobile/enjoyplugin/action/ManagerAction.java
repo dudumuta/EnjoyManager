@@ -100,6 +100,7 @@ public class ManagerAction extends AnAction {
                     File outputDir = new File(e.getProject().getBasePath() + "/enjoyManager");
                     File output = new File(e.getProject().getBasePath() + "/enjoyManager/enjoy.json");
                     HashMap<String, Boolean> chooses = new HashMap<>();
+                    HashMap<String, Boolean> uninstallChoose = new HashMap<>();
                     if (!outputDir.exists()) {
                         outputDir.mkdir();
                     }
@@ -120,6 +121,7 @@ public class ManagerAction extends AnAction {
                         });
                         for (Repository repositorie : repositories) {
                             chooses.put(repositorie.getName(), repositorie.getChoose());
+                            uninstallChoose.put(repositorie.getName(), repositorie.getUninstall());
                         }
                     }
 
@@ -129,7 +131,7 @@ public class ManagerAction extends AnAction {
                         jsonObject.put("name", s);
                         jsonObject.put("choose", chooses.getOrDefault(s, false));
                         jsonObject.put("version", versions.get(s));
-//                        jsonObject.put("aarInfo", "com.youzan.mobile." + s);
+                        jsonObject.put("uninstall", uninstallChoose.getOrDefault(s, false));
                         jsonArray.add(jsonObject);
                     }
 

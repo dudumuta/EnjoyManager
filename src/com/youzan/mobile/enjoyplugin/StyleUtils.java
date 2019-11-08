@@ -7,9 +7,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 
 public class StyleUtils {
+
+    private static List<String> baseModules = new ArrayList<>(Arrays.asList("lib_common", "module_account", "module_data", "module_home", "module_mediator", "module_paysdk", "module_sale", "module_shop", "module_goods"));
 
     public static void setTableStyle(JTable jtb) {
 
@@ -78,5 +83,12 @@ public class StyleUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isContainInBaseModule(String moduleName) {
+        if (moduleName == null || moduleName.isEmpty()) {
+            return false;
+        }
+        return baseModules.contains(moduleName);
     }
 }

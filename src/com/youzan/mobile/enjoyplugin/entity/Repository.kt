@@ -3,7 +3,8 @@ package com.youzan.mobile.enjoyplugin.entity
 class Repository(
         var choose: Boolean,
         var name: String,
-        var version: String
+        var version: String,
+        var uninstall: Boolean
 )
 
 class Resp(
