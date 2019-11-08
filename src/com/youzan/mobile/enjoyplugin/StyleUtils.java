@@ -14,7 +14,7 @@ import java.util.List;
 
 public class StyleUtils {
 
-    private static List<String> baseModules = new ArrayList<>(Arrays.asList("lib_common", "module_account", "module_data", "module_home", "module_mediator", "module_paysdk", "module_sale", "module_shop", "module_goods"));
+    private static ArrayList<String> baseModules = new ArrayList<>(Arrays.asList("lib_common", "module_account", "module_data", "module_home", "module_mediator", "module_paysdk", "module_sale", "module_shop"));
 
     public static void setTableStyle(JTable jtb) {
 

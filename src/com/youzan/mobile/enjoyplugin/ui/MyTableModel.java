@@ -83,7 +83,9 @@ public class MyTableModel extends AbstractTableModel {
                 allData.get(rowIndex).setVersion((String) aValue);
                 break;
             case 3:
-                allData.get(rowIndex).setUninstall((boolean) aValue);
+                if (!StyleUtils.isContainInBaseModule(allData.get(rowIndex).getName())) {
+                    allData.get(rowIndex).setUninstall((boolean) aValue);
+                }
                 break;
             default:
                 break;
@@ -93,14 +95,7 @@ public class MyTableModel extends AbstractTableModel {
 
     public void selectAllOrNull(int columnIndex, boolean value) {
         for (int index = 0; index < getRowCount(); index++) {
-            if (columnIndex == 3) {
-                if (!StyleUtils.isContainInBaseModule(allData.get(index).getName())) {
-                    this.setValueAt(value, index, columnIndex);
-                }
-            } else {
-                this.setValueAt(value, index, columnIndex);
-            }
+            this.setValueAt(value, index, columnIndex);
         }
     }
-
 }

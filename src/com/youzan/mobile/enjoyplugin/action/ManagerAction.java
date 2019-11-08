@@ -13,7 +13,6 @@ import com.intellij.openapi.project.Project;
 import com.youzan.mobile.enjoyplugin.entity.Repository;
 import com.youzan.mobile.enjoyplugin.ui.HomeDialog;
 import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,46 +27,9 @@ public class ManagerAction extends AnAction {
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
-                File file = new File(e.getProject().getBasePath() + "/app/app.iml");
                 ArrayList<String> resultList = new ArrayList<>();
                 File versionFile = new File(e.getProject().getBasePath() + "/version.properties");
                 HashMap<String, String> versions = new HashMap<>();
-                if (file.exists()) {
-                    ArrayList<String> list = new ArrayList<>();
-                    try {
-                        InputStreamReader inputReader = new InputStreamReader(new FileInputStream(file));
-                        BufferedReader bf = new BufferedReader(inputReader);
-                        // 按行读取字符串
-                        String str;
-                        while ((str = bf.readLine()) != null) {
-                            list.add(str);
-                        }
-                        bf.close();
-                        inputReader.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    if (list.size() > 0) {
-                        for (String s : list) {
-                            if (s.contains("type=\"module\"")) {
-                                String[] temp = s.split("=");
-                                String result="";
-                                if (temp.length > 2) {
-                                    result = temp[2].substring(1, temp[2].lastIndexOf("\""));
-                                }
-                                if (result.contains("modules-")) {
-                                    resultList.add(result.substring(result.lastIndexOf("-") + 1));
-                                } else {
-                                    resultList.add(result);
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    showNotification(e, "error", "提示", "modules信息解析失败");
-                }
-
                 if (versionFile.exists()) {
                     ArrayList<String> list = new ArrayList<>();
                     try {
@@ -89,6 +51,7 @@ public class ManagerAction extends AnAction {
                             String[] temp = s.split("=");
                             if (temp.length >= 2) {
                                 versions.put(temp[0].trim(), temp[1].trim());
+                                resultList.add(temp[0].trim());
                             }
                         }
                     }

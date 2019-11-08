@@ -36,6 +36,7 @@ public class HomeDialog extends JFrame {
     private JPanel buttonPane;
     private JPanel bottomPane;
     private JPanel tablePane;
+    private JTextField tag;
     private JCheckBox androidXCheckBox;
 
     private List<Repository> ALL_DATA;
@@ -56,58 +57,14 @@ public class HomeDialog extends JFrame {
         StyleUtils.setTableStyle(table);
         table.setPreferredScrollableViewportSize(new Dimension(800, 300));
         table.setFillsViewportHeight(true);
-//        table.getTableHeader().setDefaultRenderer(new CheckHeaderCellRenderer(table));
-//        table.addMouseListener(new MouseListener() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                int row = table.rowAtPoint(e.getPoint());
-//                int col = table.columnAtPoint(e.getPoint());
-//                System.out.println(row + " " + col);
-//                if (col == 0) {
-////                    table.getModel().get
-//                }
-//
-////                if (col == 4) {
-////                    Desktop desktop = Desktop.getDesktop();
-////                    try {
-////                        URI uri = new URI("http://www.github.com/" + ALL_DATA.get(row).getUser() + "/" + ALL_DATA.get(row).getName());
-////                        desktop.browse(uri);
-////                    } catch (Exception ex) {
-////                        // do nothing
-////                        ex.printStackTrace();
-////                    }
-////
-////                }
-//            }
-//
-//            @Override
-//            public void mousePressed(MouseEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void mouseReleased(MouseEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void mouseEntered(MouseEvent e) {
-//
-//            }
-//
-//            @Override
-//            public void mouseExited(MouseEvent e) {
-//
-//            }
-//        });
 
         JBScrollPane scrollPane = new JBScrollPane(table);
         tablePane.setLayout(new GridLayout(1, 0));
         tablePane.add(scrollPane);
 
-//        buttonRefresh.addActionListener(e1 -> onRefresh(table, ALL_DATA));
-
-//        buttonReset.addActionListener(e1 -> onReset(table, ALL_DATA_NO));
+        tag.setText("使用过程中遇到任何问题请联系Silas");
+        tag.setEditable(false);
+        tag.setBorder(null);
 
         buttonOK.addActionListener(e1 -> onOK());
 
@@ -172,16 +129,21 @@ public class HomeDialog extends JFrame {
                     }
                 }
                 List<String> modulesNames = new ArrayList<>();
+                List<String> uninstallNames = new ArrayList<>();
                 for (Repository temp : data) {
                     if (temp.getChoose()) {
                         modulesNames.add(temp.getName());
                     }
+                    if (temp.getUninstall()) {
+                        uninstallNames.add(temp.getName());
+                    }
                 }
                 JSONArray modules = JSONArray.parseArray(JSON.toJSONString(modulesNames));
+                JSONArray uninstall = JSONArray.parseArray(JSON.toJSONString(uninstallNames));
                 FileWriter propertiesW = null;
                 try {
                     propertiesW = new FileWriter(properties);
-                    propertiesW.write(modules.toJSONString());
+                    propertiesW.write("aar依赖：" + modules.toJSONString() + "\n" + "卸载module：" + uninstall.toJSONString());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 } finally {
