@@ -1,7 +1,7 @@
 package com.youzan.mobile.enjoyplugin.ui;
 
 import com.youzan.mobile.enjoyplugin.StyleUtils;
-import com.youzan.mobile.enjoyplugin.entity.Repository;
+import com.youzan.mobile.enjoyplugin.module.Repository;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.List;

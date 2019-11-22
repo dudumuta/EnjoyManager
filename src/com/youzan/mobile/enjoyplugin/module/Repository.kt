@@ -1,4 +1,4 @@
-package com.youzan.mobile.enjoyplugin.entity
+package com.youzan.mobile.enjoyplugin.module
 
 class Repository(
         var choose: Boolean,

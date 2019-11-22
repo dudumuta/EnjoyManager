@@ -11,7 +11,9 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.sun.istack.internal.NotNull;
 import com.youzan.mobile.enjoyplugin.StyleUtils;
-import com.youzan.mobile.enjoyplugin.entity.Repository;
+import com.youzan.mobile.enjoyplugin.Utils;
+import com.youzan.mobile.enjoyplugin.module.EnjoyModule;
+import com.youzan.mobile.enjoyplugin.module.Repository;
 
 import javax.swing.*;
 import java.awt.*;
@@ -89,15 +91,51 @@ public class HomeDialog extends JFrame {
     }
 
     private void onCancel() {
+//        if (event.getProject() == null || event.getProject().getBasePath() == null) {
+//            Utils.showNotification(event, "error", "提示", "project 有误");
+//        }
+//        File output = new File(event.getProject().getBasePath() + "/enjoyManager/enjoy.json");
+//        if (output.exists()) {
+//            output.delete();
+//        }
         dispose();
     }
 
     private void insetStringAfterOffset(@NotNull AnActionEvent e, List<Repository> data) {
-        JSONArray array = JSONArray.parseArray(JSON.toJSONString(data));
+        if (e.getProject() == null || e.getProject().getBasePath() == null) {
+            Utils.showNotification(e, "error", "提示", "project 有误");
+        }
+
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
-                //生成配置文件
+                //构建json，准备保存文件
+                String branch = Utils.getCurrentBranch(e.getProject().getBasePath());
+                EnjoyModule enjoyModule = new EnjoyModule();
+                enjoyModule.modules = data;
+                enjoyModule.branch = branch;
+                //待写入文件的列表
+                List<EnjoyModule> modules = new ArrayList<>();
+                String enjoyJson = Utils.readJsonFile(e.getProject().getBasePath() + "/enjoyManager/enjoy.json");
+                if (enjoyJson != null && enjoyJson.contains("branch")) {
+                    //新的模型
+                    modules = JSON.parseArray(enjoyJson, EnjoyModule.class);
+                }
+                EnjoyModule needDelete = null;
+                for (EnjoyModule temp: modules) {
+                    if (temp.branch.equals(branch)) {
+                        needDelete = temp;
+                        break;
+                    }
+                }
+                modules.remove(needDelete);
+                modules.add(0, enjoyModule);
+                if (modules.size() == 6) {
+                    modules.remove(5);
+                }
+                JSONArray modulesJson = JSONArray.parseArray(JSON.toJSONString(modules));
+
+                //写入文件
                 File output = new File(e.getProject().getBasePath() + "/enjoyManager/enjoy.json");
                 if (!output.exists()) {
                     try {
@@ -106,12 +144,11 @@ public class HomeDialog extends JFrame {
                         ex.printStackTrace();
                     }
                 }
-
                 FileWriter fwriter = null;
                 try {
                     // true表示不覆盖原来的内容，而是加到文件的后面。若要覆盖原来的内容，直接省略这个参数就好
                     fwriter = new FileWriter(output);
-                    fwriter.write(array.toJSONString());
+                    fwriter.write(modulesJson.toJSONString());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 } finally {
@@ -123,6 +160,7 @@ public class HomeDialog extends JFrame {
                     }
                 }
 
+                //将使用情况写入到gradle.properties，便于as提示
                 File properties = new File(e.getProject().getBasePath() + "/enjoyManager/gradle.properties");
                 //生成properties文件触发as的sync策略
                 if (!properties.exists()) {
@@ -142,12 +180,12 @@ public class HomeDialog extends JFrame {
                         uninstallNames.add(temp.getName());
                     }
                 }
-                JSONArray modules = JSONArray.parseArray(JSON.toJSONString(modulesNames));
+                JSONArray chooseModules = JSONArray.parseArray(JSON.toJSONString(modulesNames));
                 JSONArray uninstall = JSONArray.parseArray(JSON.toJSONString(uninstallNames));
                 FileWriter propertiesW = null;
                 try {
                     propertiesW = new FileWriter(properties);
-                    propertiesW.write("aar依赖：" + modules.toJSONString() + "\n" + "卸载module：" + uninstall.toJSONString());
+                    propertiesW.write("aar依赖：" + chooseModules.toJSONString() + "\n" + "卸载module：" + uninstall.toJSONString());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 } finally {
