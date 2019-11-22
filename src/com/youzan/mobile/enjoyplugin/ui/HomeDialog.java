@@ -37,6 +37,7 @@ public class HomeDialog extends JFrame {
     private JPanel bottomPane;
     private JPanel tablePane;
     private JTextField tag;
+    private JTextField tips;
     private JCheckBox androidXCheckBox;
 
     private List<Repository> ALL_DATA;
@@ -65,6 +66,9 @@ public class HomeDialog extends JFrame {
         tag.setText("使用过程中遇到任何问题请联系Silas");
         tag.setEditable(false);
         tag.setBorder(null);
+        tips.setText(" 谨慎使用模块卸载，一旦卸载APK包中将不包含其对应功能");
+        tips.setEditable(false);
+        tips.setBorder(null);
 
         buttonOK.addActionListener(e1 -> onOK());
 
