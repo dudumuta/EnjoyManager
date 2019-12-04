@@ -7,10 +7,3 @@ class Repository(
         var uninstall: Boolean
 )
 
-class Resp(
-        val created_at: String,
-        val name: String,
-        val published_at: String,
-        val tag_name: String
-)
-

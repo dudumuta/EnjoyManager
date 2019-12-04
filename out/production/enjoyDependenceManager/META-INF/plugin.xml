@@ -3,19 +3,20 @@
     <name>enjoymanager</name>
     <version>1.0.0</version>
     <vendor email="565911158@qq.com" url="https://www.youzan.com">
-        https://github.com/dudumuta
+        http://gitlab.qima-inc.com/normandy-android/EnjoyManagerASPlugin
     </vendor>
 
     <description><![CDATA[
-      <h1>AutoGradle</h1>
+      <h1>EnjoyManager</h1>
       <br/>
       <p>
       <b>
-      <a href="https://github.com/dudumuta">GitHub</a>
+      <a href="http://gitlab.qima-inc.com/normandy-android/EnjoyManagerASPlugin">GitHub</a>
       </b>
       </p>
       <br/>
       <h2>a enjoyDependence helper plugin.</h2>
+      <h2>If you encounter any problems, contact Silas.</h2>
     ]]></description>
 
     <extensions defaultExtensionNs="com.intellij">

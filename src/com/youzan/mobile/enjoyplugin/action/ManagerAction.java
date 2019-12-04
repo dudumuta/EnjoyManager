@@ -3,13 +3,9 @@ package com.youzan.mobile.enjoyplugin.action;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.intellij.notification.NotificationDisplayType;
-import com.intellij.notification.NotificationGroup;
-import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.project.Project;
 import com.youzan.mobile.enjoyplugin.Utils;
 import com.youzan.mobile.enjoyplugin.module.EnjoyModule;
 import com.youzan.mobile.enjoyplugin.module.Repository;
@@ -36,6 +32,8 @@ public class ManagerAction extends AnAction {
                 ArrayList<String> modules = new ArrayList<>();
                 //版本集合
                 HashMap<String, String> versions = new HashMap<>();
+                boolean autoClean = false;
+                boolean autoOpenBuild = false;
                 //version文件
                 File versionFile = new File(e.getProject().getBasePath() + "/version.properties");
                 if (versionFile.exists()) {
@@ -86,7 +84,7 @@ public class ManagerAction extends AnAction {
                             ex.printStackTrace();
                         }
                     } else {
-                        String enjoyJson = Utils.readJsonFile(output.getAbsolutePath());
+                        String enjoyJson = Utils.readFile(output.getAbsolutePath());
                         if (enjoyJson != null && !enjoyJson.contains("branch")) {
                             //没有branch字段的认为是老版本，采用老逻辑
                             List<Repository> repositories = JSON.parseArray(enjoyJson, Repository.class);
@@ -116,6 +114,8 @@ public class ManagerAction extends AnAction {
                                             return o1.getName().compareTo(o2.getName());
                                         }
                                     });
+                                    autoClean = module.autoClean;
+                                    autoOpenBuild = module.autoOpenBuild;
                                 }
                             }
                             if (temp != null) {
@@ -170,7 +170,7 @@ public class ManagerAction extends AnAction {
                     if (data0 == null) {
                         Utils.showNotification(e, "error", "提示", "项目列表解析失败");
                     } else {
-                        HomeDialog dialog = new HomeDialog(e, data, data0);
+                        HomeDialog dialog = new HomeDialog(e, data, data0, autoClean, autoOpenBuild);
                         dialog.pack();
                         dialog.setVisible(true);
                     }

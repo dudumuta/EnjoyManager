@@ -21,6 +21,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,20 +33,18 @@ public class HomeDialog extends JFrame {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JButton buttonRefresh;
-    private JButton buttonReset;
-    private JCheckBox kotlinCheckBox;
     private JPanel buttonPane;
     private JPanel bottomPane;
     private JPanel tablePane;
     private JTextField tag;
     private JTextField tips;
-    private JCheckBox androidXCheckBox;
+    private JCheckBox autoOpenBuildCheckBox;
+    private JCheckBox autoCleanCheckBox;
 
     private List<Repository> ALL_DATA;
     private List<Repository> ALL_DATA_NO;
 
-    public HomeDialog(AnActionEvent event, List<Repository> data, List<Repository> data0) {
+    public HomeDialog(AnActionEvent event, List<Repository> data, List<Repository> data0, boolean autoClean, boolean autoOpenBuild) {
 
         this.event = event;
         this.ALL_DATA = data;
@@ -72,8 +71,10 @@ public class HomeDialog extends JFrame {
         tips.setEditable(false);
         tips.setBorder(null);
 
-        buttonOK.addActionListener(e1 -> onOK());
+        autoOpenBuildCheckBox.setSelected(autoOpenBuild);
+        autoCleanCheckBox.setSelected(autoClean);
 
+        buttonOK.addActionListener(e1 -> onOK());
         buttonCancel.addActionListener(e1 -> onCancel());
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -88,6 +89,8 @@ public class HomeDialog extends JFrame {
 
     private void onOK() {
         insetStringAfterOffset(event, ALL_DATA);
+        autoOpenLocalAARBuild();
+        autoClean(event.getProject().getBasePath());
     }
 
     private void onCancel() {
@@ -114,15 +117,17 @@ public class HomeDialog extends JFrame {
                 EnjoyModule enjoyModule = new EnjoyModule();
                 enjoyModule.modules = data;
                 enjoyModule.branch = branch;
+                enjoyModule.autoClean = autoCleanCheckBox.isSelected();
+                enjoyModule.autoOpenBuild = autoOpenBuildCheckBox.isSelected();
                 //待写入文件的列表
                 List<EnjoyModule> modules = new ArrayList<>();
-                String enjoyJson = Utils.readJsonFile(e.getProject().getBasePath() + "/enjoyManager/enjoy.json");
+                String enjoyJson = Utils.readFile(e.getProject().getBasePath() + "/enjoyManager/enjoy.json");
                 if (enjoyJson != null && enjoyJson.contains("branch")) {
                     //新的模型
                     modules = JSON.parseArray(enjoyJson, EnjoyModule.class);
                 }
                 EnjoyModule needDelete = null;
-                for (EnjoyModule temp: modules) {
+                for (EnjoyModule temp : modules) {
                     if (temp.branch.equals(branch)) {
                         needDelete = temp;
                         break;
@@ -211,5 +216,55 @@ public class HomeDialog extends JFrame {
                 NotificationType.INFORMATION,
                 null
         ).notify(event.getProject());
+    }
+
+    /**
+     * 自动触发clean
+     */
+    private void autoClean(String filePath) {
+        if (!autoCleanCheckBox.isSelected()) {
+            return;
+        }
+        String command = "./gradlew clean";
+        File file = new File(filePath);
+        try {
+            Process p = Runtime.getRuntime().exec(command, null, file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 自动在local.properties中写入aarBuild=true
+     */
+    private void autoOpenLocalAARBuild() {
+        if (!autoOpenBuildCheckBox.isSelected()) {
+            return;
+        }
+        FileWriter fw = null;
+        try {
+            //如果文件存在，则追加内容；如果文件不存在，则创建文件
+            File f = new File(event.getProject().getBasePath() + "/local.properties");
+            fw = new FileWriter(f, true);
+            String localStr = Utils.readFile(event.getProject().getBasePath() + "/local.properties");
+            PrintWriter pw = new PrintWriter(fw);
+            if (localStr != null && !localStr.contains("aarBuild")) {
+                if (!localStr.contains("#aar构建")) {
+                    pw.println("#aar构建");
+                }
+                pw.println("aarBuild=true");
+            }
+            pw.flush();
+            pw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fw.flush();
+                fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

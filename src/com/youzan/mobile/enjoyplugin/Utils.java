@@ -38,7 +38,7 @@ public class Utils {
      * @param fileName
      * @return
      */
-    public static String readJsonFile(String fileName) {
+    public static String readFile(String fileName) {
         String jsonStr = "";
         try {
             File jsonFile = new File(fileName);
