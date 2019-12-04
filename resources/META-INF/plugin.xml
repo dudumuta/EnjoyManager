@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.youzan.mobile.enjoyplugin</id>
     <name>enjoymanager</name>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <vendor email="565911158@qq.com" url="https://www.youzan.com">
         http://gitlab.qima-inc.com/normandy-android/EnjoyManagerASPlugin
     </vendor>
@@ -19,6 +19,12 @@
       <h2>If you encounter any problems, contact Silas.</h2>
     ]]></description>
 
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
     </extensions>
@@ -30,4 +36,5 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
     </actions>
+    <idea-version since-build="141.0"/>
 </idea-plugin>
