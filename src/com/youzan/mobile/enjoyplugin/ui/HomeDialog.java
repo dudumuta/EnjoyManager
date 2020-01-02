@@ -13,9 +13,10 @@ import com.sun.istack.internal.NotNull;
 import com.youzan.mobile.enjoyplugin.StyleUtils;
 import com.youzan.mobile.enjoyplugin.Utils;
 import com.youzan.mobile.enjoyplugin.module.EnjoyModule;
-import com.youzan.mobile.enjoyplugin.module.Repository;
-
+import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
 import javax.swing.*;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -41,9 +42,9 @@ public class HomeDialog extends JFrame {
     private JCheckBox autoOpenBuildCheckBox;
     private JCheckBox autoCleanCheckBox;
 
-    private List<Repository> ALL_DATA;
+    private List<ModuleInfo> ALL_DATA;
 
-    public HomeDialog(AnActionEvent event, List<Repository> data, boolean autoClean, boolean autoOpenBuild) {
+    public HomeDialog(AnActionEvent event, List<ModuleInfo> data, boolean autoClean, boolean autoOpenBuild) {
 
         this.event = event;
         this.ALL_DATA = data;
@@ -54,9 +55,11 @@ public class HomeDialog extends JFrame {
         getRootPane().setDefaultButton(buttonOK);
 
         JBTable table = new JBTable(new MyTableModel(ALL_DATA));
+        setColumnSize(table, 0, 100, 100, 100);
+//        setColumnSize(table, 1, 190, 190, 200);
         table .getTableHeader().setReorderingAllowed(false);
         StyleUtils.setTableStyle(table);
-        table.setPreferredScrollableViewportSize(new Dimension(800, 300));
+        table.setPreferredScrollableViewportSize(new Dimension(800, 500));
         table.setFillsViewportHeight(true);
 
         JBScrollPane scrollPane = new JBScrollPane(table);
@@ -66,11 +69,12 @@ public class HomeDialog extends JFrame {
         tag.setText("使用过程中遇到任何问题请联系Silas");
         tag.setEditable(false);
         tag.setBorder(null);
-        tips.setText(" 谨慎使用模块卸载，一旦卸载APK包中将不包含其对应功能");
+        tips.setText(" 欢迎使用EnjoyDependence");
         tips.setEditable(false);
         tips.setBorder(null);
 
-        autoOpenBuildCheckBox.setSelected(autoOpenBuild);
+//        autoOpenBuildCheckBox.setSelected(autoOpenBuild);
+        autoOpenBuildCheckBox.setVisible(false);
         autoCleanCheckBox.setSelected(autoClean);
 
         buttonOK.addActionListener(e1 -> onOK());
@@ -103,7 +107,7 @@ public class HomeDialog extends JFrame {
         dispose();
     }
 
-    private void insetStringAfterOffset(@NotNull AnActionEvent e, List<Repository> data) {
+    private void insetStringAfterOffset(@NotNull AnActionEvent e, List<ModuleInfo> data) {
         if (e.getProject() == null || e.getProject().getBasePath() == null) {
             Utils.showNotification(e, "error", "提示", "project 有误");
         }
@@ -117,7 +121,7 @@ public class HomeDialog extends JFrame {
                 enjoyModule.modules = data;
                 enjoyModule.branch = branch;
                 enjoyModule.autoClean = autoCleanCheckBox.isSelected();
-                enjoyModule.autoOpenBuild = autoOpenBuildCheckBox.isSelected();
+//                enjoyModule.autoOpenBuild = autoOpenBuildCheckBox.isSelected();
                 //待写入文件的列表
                 List<EnjoyModule> modules = new ArrayList<>();
                 String enjoyJson = Utils.readFile(e.getProject().getBasePath() + "/enjoyManager/enjoy.json");
@@ -176,12 +180,12 @@ public class HomeDialog extends JFrame {
                 }
                 List<String> modulesNames = new ArrayList<>();
                 List<String> uninstallNames = new ArrayList<>();
-                for (Repository temp : data) {
-                    if (temp.getChoose()) {
-                        modulesNames.add(temp.getName());
+                for (ModuleInfo temp : data) {
+                    if (temp.choose) {
+                        modulesNames.add(temp.name);
                     }
-                    if (temp.getUninstall()) {
-                        uninstallNames.add(temp.getName());
+                    if (temp.uninstall) {
+                        uninstallNames.add(temp.name);
                     }
                 }
                 JSONArray chooseModules = JSONArray.parseArray(JSON.toJSONString(modulesNames));
@@ -237,9 +241,9 @@ public class HomeDialog extends JFrame {
      * 自动在local.properties中写入aarBuild=true
      */
     private void autoOpenLocalAARBuild() {
-        if (!autoOpenBuildCheckBox.isSelected()) {
-            return;
-        }
+//        if (!autoOpenBuildCheckBox.isSelected()) {
+//            return;
+//        }
         FileWriter fw = null;
         try {
             //如果文件存在，则追加内容；如果文件不存在，则创建文件
@@ -265,5 +269,15 @@ public class HomeDialog extends JFrame {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void setColumnSize(JTable table, int i, int preferedWidth, int maxWidth, int minWidth) {
+        //表格的列模型
+        TableColumnModel cm = table.getColumnModel();
+        //得到第i个列对象
+        TableColumn column = cm.getColumn(i);
+        column.setPreferredWidth(preferedWidth);
+        column.setMaxWidth(maxWidth);
+        column.setMinWidth(minWidth);
     }
 }

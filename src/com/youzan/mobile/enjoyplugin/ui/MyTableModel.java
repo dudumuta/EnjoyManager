@@ -1,20 +1,18 @@
 package com.youzan.mobile.enjoyplugin.ui;
 
-import com.youzan.mobile.enjoyplugin.StyleUtils;
-import com.youzan.mobile.enjoyplugin.module.Repository;
-
+import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class MyTableModel extends AbstractTableModel {
 
-    private List<Repository> allData;
+    private List<ModuleInfo> allData;
 
-    public MyTableModel(List<Repository> ALL_DATA) {
+    public MyTableModel(List<ModuleInfo> ALL_DATA) {
         this.allData = ALL_DATA;
     }
 
-    private String[] columnNames = {"AAR依赖", "ModuleLib", "Version"};
+    private String[] columnNames = {"AarBuild", "ModuleName", "Version", "Owner"};
 
     @Override
     public int getRowCount() {
@@ -38,8 +36,8 @@ public class MyTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        String moduleName = allData.get(rowIndex).getName();
-        return columnIndex == 0;
+        String moduleName = allData.get(rowIndex).name;
+        return columnIndex == 0 || columnIndex == 3;
     }
 
     @Override
@@ -47,15 +45,19 @@ public class MyTableModel extends AbstractTableModel {
         Object o;
         switch (columnIndex) {
             case 0: {
-                o = allData.get(rowIndex).getChoose();
+                o = allData.get(rowIndex).choose;
                 break;
             }
             case 1: {
-                o = allData.get(rowIndex).getName();
+                o = allData.get(rowIndex).name;
                 break;
             }
             case 2: {
-                o = allData.get(rowIndex).getVersion();
+                o = allData.get(rowIndex).version;
+                break;
+            }
+            case 3: {
+                o = allData.get(rowIndex).owner;
                 break;
             }
             default: {
@@ -70,11 +72,13 @@ public class MyTableModel extends AbstractTableModel {
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
-                allData.get(rowIndex).setChoose((boolean) aValue);
+                allData.get(rowIndex).choose = (boolean) aValue;
                 break;
             case 2:
-                allData.get(rowIndex).setVersion((String) aValue);
+                allData.get(rowIndex).version = (String) aValue;
                 break;
+            case 3:
+                allData.get(rowIndex).owner = (String) aValue;
             default:
                 break;
         }
