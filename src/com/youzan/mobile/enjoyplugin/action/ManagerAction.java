@@ -252,7 +252,7 @@ public class ManagerAction extends AnAction {
         moduleOwner.put("module_asset", "刘洋");
         moduleOwner.put("lib_common", "coffee涛");
         moduleOwner.put("module_goods", "Alex");
-        moduleOwner.put("module_stock", "永康/凯丰");
+        moduleOwner.put("module_stock", "永康");
         moduleOwner.put("module_member", "光线");
         moduleOwner.put("module_prepay", "光线");
         moduleOwner.put("module_account", "腊肠");
