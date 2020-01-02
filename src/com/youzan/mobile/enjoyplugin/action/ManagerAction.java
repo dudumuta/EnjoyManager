@@ -260,7 +260,7 @@ public class ManagerAction extends AnAction {
         moduleOwner.put("module_home", "腊肠");
         moduleOwner.put("module_shoppingguide", "佳娟");
         moduleOwner.put("module_mediator", "光线");
-        moduleOwner.put("module_face", "腊肠");
+        moduleOwner.put("module_face", "川普");
         moduleOwner.put("module_scanner", "光线");
         moduleOwner.put("module_staff", "腊肠/伯安");
         moduleOwner.put("module_expenses", "鲁班");
