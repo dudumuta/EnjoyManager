@@ -14,7 +14,7 @@ public class MyTableModel extends AbstractTableModel {
         this.allData = ALL_DATA;
     }
 
-    private String[] columnNames = {"AAR依赖", "ModuleLib", "Version", "卸载"};
+    private String[] columnNames = {"AAR依赖", "ModuleLib", "Version"};
 
     @Override
     public int getRowCount() {
@@ -39,10 +39,7 @@ public class MyTableModel extends AbstractTableModel {
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         String moduleName = allData.get(rowIndex).getName();
-        if (columnIndex == 3 && StyleUtils.isContainInBaseModule(moduleName)) {
-            return false;
-        }
-        return columnIndex == 0 || columnIndex == 3;
+        return columnIndex == 0;
     }
 
     @Override
@@ -61,10 +58,6 @@ public class MyTableModel extends AbstractTableModel {
                 o = allData.get(rowIndex).getVersion();
                 break;
             }
-            case 3: {
-                o = allData.get(rowIndex).getUninstall();
-                break;
-            }
             default: {
                 o = "";
                 break;
@@ -81,11 +74,6 @@ public class MyTableModel extends AbstractTableModel {
                 break;
             case 2:
                 allData.get(rowIndex).setVersion((String) aValue);
-                break;
-            case 3:
-                if (!StyleUtils.isContainInBaseModule(allData.get(rowIndex).getName())) {
-                    allData.get(rowIndex).setUninstall((boolean) aValue);
-                }
                 break;
             default:
                 break;
