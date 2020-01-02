@@ -263,6 +263,7 @@ public class ManagerAction extends AnAction {
         moduleOwner.put("module_face", "腊肠");
         moduleOwner.put("module_scanner", "光线");
         moduleOwner.put("module_staff", "腊肠/伯安");
+        moduleOwner.put("module_expenses", "鲁班");
     }
 
     private void clearInfo() {
