@@ -42,13 +42,11 @@ public class HomeDialog extends JFrame {
     private JCheckBox autoCleanCheckBox;
 
     private List<Repository> ALL_DATA;
-    private List<Repository> ALL_DATA_NO;
 
-    public HomeDialog(AnActionEvent event, List<Repository> data, List<Repository> data0, boolean autoClean, boolean autoOpenBuild) {
+    public HomeDialog(AnActionEvent event, List<Repository> data, boolean autoClean, boolean autoOpenBuild) {
 
         this.event = event;
         this.ALL_DATA = data;
-        this.ALL_DATA_NO = data0;
 
         setContentPane(contentPane);
 //        setModal(true);
