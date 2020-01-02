@@ -75,6 +75,7 @@ public class ManagerAction extends AnAction {
                     } else {
                         HomeDialog dialog = new HomeDialog(e, data, autoClean, autoOpenBuild);
                         dialog.pack();
+                        dialog.setLocationRelativeTo(null);
                         dialog.setVisible(true);
                     }
                 }
