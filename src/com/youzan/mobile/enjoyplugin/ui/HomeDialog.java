@@ -72,11 +72,11 @@ public class HomeDialog extends JFrame {
         JBTable publishT = new JBTable(new PublishTableModel(ALL_DATA));
         publishT.getTableHeader().setReorderingAllowed(false);
         StyleUtils.setTableStyle(publishT, false);
+        publishT.setPreferredScrollableViewportSize(new Dimension(160, 500));
+        publishT.setFillsViewportHeight(true);
         TableCellRenderer buttonRenderer = new JTableButtonRenderer(publishT.getDefaultRenderer(JButton.class));
         publishT.getColumn("LocalPublish").setCellRenderer(buttonRenderer);
         publishT.addMouseListener(new JTableButtonMouseListener(publishT));
-        publishT.setPreferredScrollableViewportSize(new Dimension(120, 500));
-        publishT.setFillsViewportHeight(true);
         JBScrollPane publishPane = new JBScrollPane(publishT);
         publishPanel.setLayout(new GridLayout(1, 0));
         publishPanel.add(publishPane);
