@@ -1,5 +1,6 @@
 package com.youzan.mobile.enjoyplugin.ui;
 
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
 
 import javax.swing.*;
@@ -11,8 +12,10 @@ import java.util.List;
 public class PublishTableModel extends AbstractTableModel {
 
     private List<ModuleInfo> allData;
+    private AnActionEvent event;
 
-    public PublishTableModel(List<ModuleInfo> ALL_DATA) {
+    public PublishTableModel(AnActionEvent event, List<ModuleInfo> ALL_DATA) {
+        this.event = event;
         this.allData = ALL_DATA;
     }
 
@@ -47,7 +50,7 @@ public class PublishTableModel extends AbstractTableModel {
                 final JButton button = new JButton(allData.get(rowIndex).name);
                 button.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
-                        new LocalPublishDialog(allData.get(rowIndex).name).setVisible(true);
+                        new LocalPublishDialog(event, allData.get(rowIndex).name).setVisible(true);
                     }
                 });
                 o = button;
