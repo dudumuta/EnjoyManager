@@ -16,7 +16,7 @@ public class StyleUtils {
 
     private static ArrayList<String> baseModules = new ArrayList<>(Arrays.asList("lib_common", "module_account", "module_data", "module_home", "module_mediator", "module_paysdk", "module_sale", "module_shop", "module_settings"));
 
-    public static void setTableStyle(JTable jtb) {
+    public static void setTableStyle(JTable jtb, boolean needCheckHeader) {
 
         //设置选中行的背景色
         //jtb.setSelectionBackground(new Color(224, 242, 255));
@@ -26,7 +26,9 @@ public class StyleUtils {
 
         // 设置点击表头自动实现排序
         jtb.setAutoCreateRowSorter(false);
-        new CheckHeaderCellRenderer(jtb);
+        if (needCheckHeader) {
+            new CheckHeaderCellRenderer(jtb);
+        }
         jtb.getTableHeader().setPreferredSize(new Dimension(1, 50));
         jtb.getTableHeader().setFont(new Font("新宋体", Font.PLAIN, 14));
 

@@ -14,7 +14,9 @@ import com.youzan.mobile.enjoyplugin.StyleUtils;
 import com.youzan.mobile.enjoyplugin.Utils;
 import com.youzan.mobile.enjoyplugin.module.EnjoyModule;
 import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
+
 import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
@@ -41,6 +43,7 @@ public class HomeDialog extends JFrame {
     private JTextField tips;
     private JCheckBox autoOpenBuildCheckBox;
     private JCheckBox autoCleanCheckBox;
+    private JPanel publishPanel;
 
     private List<ModuleInfo> ALL_DATA;
 
@@ -54,17 +57,29 @@ public class HomeDialog extends JFrame {
         setTitle("Enjoy Manager");
         getRootPane().setDefaultButton(buttonOK);
 
+        //module基本信息
         JBTable table = new JBTable(new MyTableModel(ALL_DATA));
         setColumnSize(table, 0, 100, 100, 100);
-//        setColumnSize(table, 1, 190, 190, 200);
-        table .getTableHeader().setReorderingAllowed(false);
-        StyleUtils.setTableStyle(table);
+        table.getTableHeader().setReorderingAllowed(false);
+        StyleUtils.setTableStyle(table, true);
         table.setPreferredScrollableViewportSize(new Dimension(800, 500));
         table.setFillsViewportHeight(true);
-
         JBScrollPane scrollPane = new JBScrollPane(table);
         tablePane.setLayout(new GridLayout(1, 0));
         tablePane.add(scrollPane);
+
+        //module 本地发布
+        JBTable publishT = new JBTable(new PublishTableModel(ALL_DATA));
+        publishT.getTableHeader().setReorderingAllowed(false);
+        StyleUtils.setTableStyle(publishT, false);
+        TableCellRenderer buttonRenderer = new JTableButtonRenderer(publishT.getDefaultRenderer(JButton.class));
+        publishT.getColumn("LocalPublish").setCellRenderer(buttonRenderer);
+        publishT.addMouseListener(new JTableButtonMouseListener(publishT));
+        publishT.setPreferredScrollableViewportSize(new Dimension(120, 500));
+        publishT.setFillsViewportHeight(true);
+        JBScrollPane publishPane = new JBScrollPane(publishT);
+        publishPanel.setLayout(new GridLayout(1, 0));
+        publishPanel.add(publishPane);
 
         tag.setText("使用过程中遇到任何问题请联系Silas");
         tag.setEditable(false);
