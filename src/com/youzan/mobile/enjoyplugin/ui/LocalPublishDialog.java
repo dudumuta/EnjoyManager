@@ -1,11 +1,19 @@
 package com.youzan.mobile.enjoyplugin.ui;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.youzan.mobile.enjoyplugin.Utils;
+import com.youzan.mobile.enjoyplugin.callback.ExecCallback;
+import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 public class LocalPublishDialog extends JDialog {
     private JPanel contentPane;
@@ -16,20 +24,23 @@ public class LocalPublishDialog extends JDialog {
     private JTextArea textArea1;
     private AnActionEvent event;
     private String moduleName;
+    private List<ModuleInfo> allData;
 
-    public LocalPublishDialog(AnActionEvent event, String moduleName) {
+    public LocalPublishDialog(AnActionEvent event, String moduleName, List<ModuleInfo> ALL_DATA) {
         this.event = event;
         this.moduleName = moduleName;
+        this.allData = ALL_DATA;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
-        textField1.setText("5.34.0-ly-SNAPSHOT");
-        setTitle("发布" + moduleName + " aar 至本地仓库"); // 设置title 2017/3/18 09:50
         setSize(300, 240); // 设置窗口大小 2017/3/18 09:50
+        setTitle("发布" + moduleName + " aar 至本地仓库"); // 设置title 2017/3/18 09:50
+
+        textField1.setText(buildVersion());
         versionTitle.setText("即将发布的Version是：");
         versionTitle.setEditable(false);
         versionTitle.setBorder(null);
-        textArea1.setText("使用方式：以ModuleName=Version的格式，复制当前发布版本号至工程根目录的local.properties。例如：lib_common=5.34.0-local-SNAPSHOT");
+        textArea1.setText("使用方式：发布完成后，打开工程root目录下的local.properties,直接Command+V即可");
         textArea1.setLineWrap(true);
         textArea1.setEditable(false);
         textArea1.setBorder(null);
@@ -67,9 +78,21 @@ public class LocalPublishDialog extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
         dispose();
-        localPublish(event.getProject().getBasePath(), this.moduleName);
+        File file = new File(this.event.getProject().getBasePath());
+        Utils.exec("git branch", file, new ExecCallback() {
+            @Override
+            public void onSuccess(String data) {
+                StringSelection content = new StringSelection(formatVersionInfo(textField1.getText()));
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(content, content);
+                Utils.showNotification(event, "success", "本地发布成功", "版本号信息已复制到粘贴板，请手动粘贴至root目录下的local.properties中");
+            }
+
+            @Override
+            public void onError() {
+                Utils.showNotification(event, "error", "本地发布失败", "请检查编译环节是否出错");
+            }
+        });
     }
 
     private void onCancel() {
@@ -77,16 +100,23 @@ public class LocalPublishDialog extends JDialog {
         dispose();
     }
 
-    /**
-     * 自动触发clean
-     */
-    private void localPublish(String filePath, String moduleName) {
-        String command = " ./gradlew :modules:" + moduleName + ":publishMavenPadDebugAarPublicationToMavenLocal -Pversion=\"5.34.0-ly-SNAPSHOT\"";
-        File file = new File(filePath);
-        try {
-            Process p = Runtime.getRuntime().exec(command, null, file);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private String buildVersion() {
+        String currentBranch = Utils.getCurrentBranch(this.event.getProject().getBasePath());
+        String currentVersion = "";
+        for (ModuleInfo temp : this.allData) {
+            if (temp.name.equals(this.moduleName)) {
+                currentVersion = temp.version;
+                if (currentVersion.contains("-SNAPSHOT")) {
+                    String[] versionTemp = currentVersion.split("-");
+                    currentVersion = versionTemp[0];
+                }
+                break;
+            }
         }
+        return currentVersion + "-" + currentBranch.hashCode() + "-local-SNAPSHOT";
+    }
+
+    private String formatVersionInfo(String version) {
+        return this.moduleName + "=" + version;
     }
 }

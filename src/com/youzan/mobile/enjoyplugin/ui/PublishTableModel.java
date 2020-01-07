@@ -50,7 +50,7 @@ public class PublishTableModel extends AbstractTableModel {
                 final JButton button = new JButton(allData.get(rowIndex).name);
                 button.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
-                        new LocalPublishDialog(event, allData.get(rowIndex).name).setVisible(true);
+                        new LocalPublishDialog(event, allData.get(rowIndex).name, allData).setVisible(true);
                     }
                 });
                 o = button;
