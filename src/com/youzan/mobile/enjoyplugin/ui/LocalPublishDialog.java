@@ -83,7 +83,7 @@ public class LocalPublishDialog extends JDialog {
         dispose();
 //        homeDialog.dispose();
         File file = new File(this.event.getProject().getBasePath());
-        Utils.exec("./gradlew :modules:" + this.moduleName + ":publishMaven" + Utils.getFlavor(this.event.getProject().getBasePath() + File.separator + "app/app.iml") + "DebugAarPublicationToMavenLocal -Pversion=" + formatVersionInfo(textField1.getText()) + " -PlocalPublish=true", file, new ExecCallback() {
+        Utils.exec("./gradlew :modules:" + this.moduleName + ":publishMaven" + Utils.getFlavor(this.event.getProject().getBasePath() + File.separator + "app/app.iml") + "DebugAarPublicationToMavenLocal -Pversion=" + textField1.getText() + " -PlocalPublish=true", file, new ExecCallback() {
             @Override
             public void onSuccess(String data) {
                 StringSelection content = new StringSelection(formatVersionInfo(textField1.getText()));
