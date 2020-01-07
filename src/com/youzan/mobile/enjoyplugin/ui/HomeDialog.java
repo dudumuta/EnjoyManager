@@ -14,6 +14,8 @@ import com.youzan.mobile.enjoyplugin.StyleUtils;
 import com.youzan.mobile.enjoyplugin.Utils;
 import com.youzan.mobile.enjoyplugin.module.EnjoyModule;
 import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
+import com.youzan.mobile.enjoyplugin.ui.model.HomeTableModel;
+import com.youzan.mobile.enjoyplugin.ui.model.PublishTableModel;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -58,7 +60,7 @@ public class HomeDialog extends JFrame {
         getRootPane().setDefaultButton(buttonOK);
 
         //module基本信息
-        JBTable table = new JBTable(new MyTableModel(ALL_DATA));
+        JBTable table = new JBTable(new HomeTableModel(ALL_DATA));
         setColumnSize(table, 0, 100, 100, 100);
         table.getTableHeader().setReorderingAllowed(false);
         StyleUtils.setTableStyle(table, true);
@@ -69,7 +71,7 @@ public class HomeDialog extends JFrame {
         tablePane.add(scrollPane);
 
         //module 本地发布
-        JBTable publishT = new JBTable(new PublishTableModel(event, ALL_DATA));
+        JBTable publishT = new JBTable(new PublishTableModel(event, ALL_DATA, this));
         publishT.getTableHeader().setReorderingAllowed(false);
         StyleUtils.setTableStyle(publishT, false);
         publishT.setPreferredScrollableViewportSize(new Dimension(160, 500));

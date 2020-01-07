@@ -6,8 +6,6 @@ import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.youzan.mobile.enjoyplugin.callback.ExecCallback;
 import org.jetbrains.annotations.NotNull;
-
-import java.awt.event.ActionEvent;
 import java.io.*;
 
 public class Utils {
@@ -60,6 +58,29 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static String getFlavor(String filePath) {
+        String flavor = "";
+        File file = new File(filePath);
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));//构造一个BufferedReader类来读取文件
+            String s;
+            while ((s = br.readLine()) != null) {
+                if (s.contains("SELECTED_BUILD_VARIANT")) {
+                    if (s.contains("pad")) {
+                        flavor = "Pad";
+                    } else if (s.contains("phone")) {
+                        flavor = "Phone";
+                    }
+                    break;
+                }
+            }
+            br.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return flavor;
     }
 
     /**

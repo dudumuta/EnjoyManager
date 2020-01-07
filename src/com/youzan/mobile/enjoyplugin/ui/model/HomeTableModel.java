@@ -1,14 +1,14 @@
-package com.youzan.mobile.enjoyplugin.ui;
+package com.youzan.mobile.enjoyplugin.ui.model;
 
 import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class MyTableModel extends AbstractTableModel {
+public class HomeTableModel extends AbstractTableModel {
 
     private List<ModuleInfo> allData;
 
-    public MyTableModel(List<ModuleInfo> ALL_DATA) {
+    public HomeTableModel(List<ModuleInfo> ALL_DATA) {
         this.allData = ALL_DATA;
     }
 

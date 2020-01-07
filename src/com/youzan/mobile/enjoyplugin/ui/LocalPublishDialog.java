@@ -25,11 +25,13 @@ public class LocalPublishDialog extends JDialog {
     private AnActionEvent event;
     private String moduleName;
     private List<ModuleInfo> allData;
+    private HomeDialog homeDialog;
 
-    public LocalPublishDialog(AnActionEvent event, String moduleName, List<ModuleInfo> ALL_DATA) {
+    public LocalPublishDialog(AnActionEvent event, String moduleName, List<ModuleInfo> ALL_DATA, HomeDialog homeDialog) {
         this.event = event;
         this.moduleName = moduleName;
         this.allData = ALL_DATA;
+        this.homeDialog = homeDialog;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -79,8 +81,9 @@ public class LocalPublishDialog extends JDialog {
 
     private void onOK() {
         dispose();
+//        homeDialog.dispose();
         File file = new File(this.event.getProject().getBasePath());
-        Utils.exec("git branch", file, new ExecCallback() {
+        Utils.exec("./gradlew :modules:" + this.moduleName + ":publishMaven" + Utils.getFlavor(this.event.getProject().getBasePath() + File.separator + "app/app.iml") + "DebugAarPublicationToMavenLocal -Pversion=" + formatVersionInfo(textField1.getText()) + " -PlocalPublish=true", file, new ExecCallback() {
             @Override
             public void onSuccess(String data) {
                 StringSelection content = new StringSelection(formatVersionInfo(textField1.getText()));
