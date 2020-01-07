@@ -1,18 +1,22 @@
 package com.youzan.mobile.enjoyplugin.ui;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.youzan.mobile.enjoyplugin.Utils;
 import com.youzan.mobile.enjoyplugin.callback.ExecCallback;
 import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 public class LocalPublishDialog extends JDialog {
@@ -84,19 +88,44 @@ public class LocalPublishDialog extends JDialog {
     private void onOK() {
         dispose();
 //        homeDialog.dispose();
-        File file = new File(this.event.getProject().getBasePath());
-        Utils.exec("./gradlew :modules:" + this.moduleName + ":publishMaven" + Utils.getFlavor(this.event.getProject().getBasePath() + File.separator + "app/app.iml") + "DebugAarPublicationToMavenLocal -Pversion=" + textField1.getText() + " -PlocalPublish=true", file, new ExecCallback() {
-            @Override
-            public void onSuccess(String data) {
-                copy();
-                Utils.showNotification(event, "success", "本地发布成功", "版本号信息已复制到粘贴板，请手动粘贴至root目录下的local.properties中");
-            }
+        ProgressManager.getInstance().run(new PublishTask(event.getProject(), "publishing..."));
+    }
 
-            @Override
-            public void onError() {
-                Utils.showNotification(event, "error", "本地发布失败", "请检查编译环节是否出错");
+    private class PublishTask extends Task.Backgroundable {
+
+        PublishTask(@Nullable Project project, @Nls(capitalization = Nls.Capitalization.Title) @NotNull String title) {
+            super(project, title, false);
+        }
+
+        @Override
+        public void run(@NotNull ProgressIndicator progressIndicator) {
+            Project project = event.getProject();
+            if (project == null) {
+                progressIndicator.stop();
+                return;
             }
-        });
+            String path = project.getBasePath();
+            if (path == null) {
+                progressIndicator.stop();
+                return;
+            }
+            progressIndicator.start();
+            File file = new File(path);
+            Utils.exec("./gradlew :modules:" + moduleName + ":publishMaven" + Utils.getFlavor(event.getProject().getBasePath() + File.separator + "app/app.iml") + "DebugAarPublicationToMavenLocal -Pversion=" + textField1.getText() + " -PlocalPublish=true", file, new ExecCallback() {
+                @Override
+                public void onSuccess(String data) {
+                    progressIndicator.stop();
+                    copy();
+                    Utils.showNotification(event, "success", "本地发布成功", "版本号信息已复制到粘贴板，请手动粘贴至root目录下的local.properties中");
+                }
+
+                @Override
+                public void onError() {
+                    progressIndicator.stop();
+                    Utils.showNotification(event, "error", "本地发布失败", "请检查编译环节是否出错");
+                }
+            });
+        }
     }
 
     private void onCancel() {
