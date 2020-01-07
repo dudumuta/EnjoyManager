@@ -71,7 +71,7 @@ public class HomeDialog extends JFrame {
         tablePane.add(scrollPane);
 
         //module 本地发布
-        JBTable publishT = new JBTable(new PublishTableModel(event, ALL_DATA, this));
+        JBTable publishT = new JBTable(new PublishTableModel(event, ALL_DATA, this, new StringBuilder()));
         publishT.getTableHeader().setReorderingAllowed(false);
         StyleUtils.setTableStyle(publishT, false);
         publishT.setPreferredScrollableViewportSize(new Dimension(160, 500));

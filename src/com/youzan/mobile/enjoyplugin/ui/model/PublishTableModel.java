@@ -16,11 +16,13 @@ public class PublishTableModel extends AbstractTableModel {
     private List<ModuleInfo> allData;
     private AnActionEvent event;
     private HomeDialog homeDialog;
+    private StringBuilder stringBuilder;
 
-    public PublishTableModel(AnActionEvent event, List<ModuleInfo> ALL_DATA, HomeDialog homeDialog) {
+    public PublishTableModel(AnActionEvent event, List<ModuleInfo> ALL_DATA, HomeDialog homeDialog, StringBuilder stringBuilder) {
         this.event = event;
         this.allData = ALL_DATA;
         this.homeDialog = homeDialog;
+        this.stringBuilder = stringBuilder;
     }
 
     private String[] columnNames = {"LocalPublish"};
@@ -54,7 +56,7 @@ public class PublishTableModel extends AbstractTableModel {
                 final JButton button = new JButton(allData.get(rowIndex).name);
                 button.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
-                        new LocalPublishDialog(event, allData.get(rowIndex).name, allData, homeDialog).setVisible(true);
+                        new LocalPublishDialog(event, allData.get(rowIndex).name, allData, homeDialog, stringBuilder).setVisible(true);
                     }
                 });
                 o = button;

@@ -26,12 +26,14 @@ public class LocalPublishDialog extends JDialog {
     private String moduleName;
     private List<ModuleInfo> allData;
     private HomeDialog homeDialog;
+    private StringBuilder copyContent;
 
-    public LocalPublishDialog(AnActionEvent event, String moduleName, List<ModuleInfo> ALL_DATA, HomeDialog homeDialog) {
+    public LocalPublishDialog(AnActionEvent event, String moduleName, List<ModuleInfo> ALL_DATA, HomeDialog homeDialog, StringBuilder stringBuilder) {
         this.event = event;
         this.moduleName = moduleName;
         this.allData = ALL_DATA;
         this.homeDialog = homeDialog;
+        this.copyContent = stringBuilder;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -86,8 +88,7 @@ public class LocalPublishDialog extends JDialog {
         Utils.exec("./gradlew :modules:" + this.moduleName + ":publishMaven" + Utils.getFlavor(this.event.getProject().getBasePath() + File.separator + "app/app.iml") + "DebugAarPublicationToMavenLocal -Pversion=" + textField1.getText() + " -PlocalPublish=true", file, new ExecCallback() {
             @Override
             public void onSuccess(String data) {
-                StringSelection content = new StringSelection(formatVersionInfo(textField1.getText()));
-                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(content, content);
+                copy();
                 Utils.showNotification(event, "success", "本地发布成功", "版本号信息已复制到粘贴板，请手动粘贴至root目录下的local.properties中");
             }
 
@@ -121,5 +122,15 @@ public class LocalPublishDialog extends JDialog {
 
     private String formatVersionInfo(String version) {
         return this.moduleName + "=" + version;
+    }
+
+    /**
+     * 复制到剪贴板
+     */
+    private void copy() {
+        String temp = formatVersionInfo(textField1.getText());
+        copyContent.append(temp).append("\n");
+        StringSelection content = new StringSelection(copyContent.toString());
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(content, content);
     }
 }
