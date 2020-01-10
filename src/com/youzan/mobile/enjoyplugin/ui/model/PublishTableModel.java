@@ -1,6 +1,9 @@
-package com.youzan.mobile.enjoyplugin.ui;
+package com.youzan.mobile.enjoyplugin.ui.model;
 
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
+import com.youzan.mobile.enjoyplugin.ui.HomeDialog;
+import com.youzan.mobile.enjoyplugin.ui.LocalPublishDialog;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -11,9 +14,15 @@ import java.util.List;
 public class PublishTableModel extends AbstractTableModel {
 
     private List<ModuleInfo> allData;
+    private AnActionEvent event;
+    private HomeDialog homeDialog;
+    private StringBuilder stringBuilder;
 
-    public PublishTableModel(List<ModuleInfo> ALL_DATA) {
+    public PublishTableModel(AnActionEvent event, List<ModuleInfo> ALL_DATA, HomeDialog homeDialog, StringBuilder stringBuilder) {
+        this.event = event;
         this.allData = ALL_DATA;
+        this.homeDialog = homeDialog;
+        this.stringBuilder = stringBuilder;
     }
 
     private String[] columnNames = {"LocalPublish"};
@@ -47,7 +56,7 @@ public class PublishTableModel extends AbstractTableModel {
                 final JButton button = new JButton(allData.get(rowIndex).name);
                 button.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
-                        new LocalPublishDialog(allData.get(rowIndex).name).setVisible(true);
+                        new LocalPublishDialog(event, allData.get(rowIndex).name, allData, homeDialog, stringBuilder).setVisible(true);
                     }
                 });
                 o = button;
