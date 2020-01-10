@@ -1,5 +1,7 @@
 package com.youzan.mobile.enjoyplugin.ui;
 
+import com.youzan.mobile.enjoyplugin.ui.model.HomeTableModel;
+
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,13 +17,13 @@ import javax.swing.table.TableCellRenderer;
 
 public class CheckHeaderCellRenderer implements TableCellRenderer {
 
-    MyTableModel tableModel;
+    HomeTableModel tableModel;
     JTableHeader tableHeader;
     final JCheckBox selectBox;
 //    final JCheckBox uninstallBox;
 
     public CheckHeaderCellRenderer(final JTable table) {
-        this.tableModel = (MyTableModel) table.getModel();
+        this.tableModel = (HomeTableModel) table.getModel();
         this.tableHeader = table.getTableHeader();
         selectBox = new JCheckBox(tableModel.getColumnName(0));
 //        uninstallBox = new JCheckBox(tableModel.getColumnName(3));
