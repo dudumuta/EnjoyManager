@@ -1,11 +1,10 @@
 package com.youzan.mobile.enjoyplugin;
 
-import com.intellij.notification.NotificationDisplayType;
-import com.intellij.notification.NotificationGroup;
-import com.intellij.notification.NotificationType;
+import com.intellij.notification.*;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.youzan.mobile.enjoyplugin.callback.ExecCallback;
 import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
 
 public class Utils {
@@ -39,7 +38,7 @@ public class Utils {
      *
      * @param command
      */
-    public static void exec(String command, File file, ExecCallback callback) {
+    public static void exec(String command, File file, ExecCallback callback, boolean split) {
         Process process = null;
         try {
             process = Runtime.getRuntime().exec(command, null, file);
@@ -48,6 +47,9 @@ public class Utils {
             String temp;
             while ((temp = reader.readLine()) != null) {
                 data.append(temp);
+                if (split) {
+                    data.append("\n");
+                }
             }
             int exitValue = process.waitFor();
             if (exitValue != 0) {
@@ -122,5 +124,18 @@ public class Utils {
                 NotificationType.INFORMATION,
                 null
         ).notify(e.getProject());
+    }
+
+    /**
+     * idea插件：发送右下角通知消息
+     *
+     * @param msg 消息
+     */
+    public static void showNotification(String msg) {
+        if (msg != null) {
+            Notification notification = new Notification("com.youzan.mobile.enjoyplugin", "Enjoy Manager", msg, NotificationType.INFORMATION);
+            notification.setDropDownText(msg);
+            Notifications.Bus.notify(notification);
+        }
     }
 }

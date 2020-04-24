@@ -2,20 +2,29 @@ package com.youzan.mobile.enjoyplugin.ui;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.sun.istack.internal.NotNull;
 import com.youzan.mobile.enjoyplugin.StyleUtils;
 import com.youzan.mobile.enjoyplugin.Utils;
+import com.youzan.mobile.enjoyplugin.callback.ExecCallback;
 import com.youzan.mobile.enjoyplugin.module.EnjoyModule;
 import com.youzan.mobile.enjoyplugin.module.ModuleInfo;
 import com.youzan.mobile.enjoyplugin.ui.model.HomeTableModel;
 import com.youzan.mobile.enjoyplugin.ui.model.PublishTableModel;
+import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -23,11 +32,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class HomeDialog extends JFrame {
@@ -46,6 +53,7 @@ public class HomeDialog extends JFrame {
     private JCheckBox autoOpenBuildCheckBox;
     private JCheckBox autoCleanCheckBox;
     private JPanel publishPanel;
+    private JButton buttonDiff;
 
     private List<ModuleInfo> ALL_DATA;
 
@@ -105,6 +113,72 @@ public class HomeDialog extends JFrame {
         });
 
         contentPane.registerKeyboardAction(e1 -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        buttonDiff.addActionListener(e -> onDiff());
+    }
+
+    private void onDiff() {
+        ProgressManager.getInstance().run(new DiffTask(event.getProject(), "diff..."));
+    }
+
+    private class DiffTask extends Task.Backgroundable {
+
+        DiffTask(@Nullable Project project, @Nls(capitalization = Nls.Capitalization.Title) @NotNull String title) {
+            super(project, title, false);
+        }
+
+        @Override
+        public void run(@org.jetbrains.annotations.NotNull ProgressIndicator progressIndicator) {
+            File lif = new File(myProject.getBasePath(), ".lif");
+            if (!lif.exists()) {
+                Utils.showNotification(".lif not exists");
+                progressIndicator.setText(".lif not exists");
+                progressIndicator.stop();
+                return;
+            }
+            try {
+                JSONObject jsonObject = JSON.parseObject(new FileInputStream(lif), JSONObject.class);
+                String glc = jsonObject.getString("glc");
+                String cmd = "git diff " + glc + " --name-only";
+                progressIndicator.start();
+                Utils.exec(cmd, lif.getParentFile(), new ExecCallback() {
+                    @Override
+                    public void onSuccess(String data) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String[] split = data.split("\n");
+                        for (ModuleInfo info : ALL_DATA) {
+                            info.choose = true;
+                        }
+                        for (String path : split) {
+                            if (path.isEmpty()) {
+                                continue;
+                            }
+                            for (ModuleInfo info : ALL_DATA) {
+                                if (path.contains(info.name) && info.choose) {
+                                    info.choose = false;
+                                    stringBuilder.append(info.name).append("\n");
+                                    break;
+                                }
+                            }
+                        }
+                        Utils.showNotification("ARR模块： \n" + stringBuilder.toString());
+                        progressIndicator.stop();
+                        onOK();
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressIndicator.setText("error2");
+                        progressIndicator.stop();
+                        Utils.showNotification("CMD执行失败");
+                    }
+                }, true);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                Utils.showNotification(ex.getMessage());
+                progressIndicator.stop();
+            }
+        }
+
     }
 
     private void onOK() {

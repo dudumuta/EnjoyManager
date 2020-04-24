@@ -124,7 +124,7 @@ public class LocalPublishDialog extends JDialog {
                     progressIndicator.stop();
                     Utils.showNotification(event, "error", "本地发布失败", "请检查编译环节是否出错");
                 }
-            });
+            }, false);
         }
     }
 
